@@ -16,21 +16,12 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                sh """
-                brew install fastlane || true
-                gem install fastlane --user-install || true
-                """
-            }
-        }
-
         stage('Prepare API Key') {
             steps {
                 withCredentials([file(credentialsId: 'APPLE_API_KEY', variable: 'API_KEY_FILE')]) {
                     sh """
                     mkdir -p fastlane
-                    cp "\$API_KEY_FILE" fastlane/AuthKey.p8
+                    cp "\$API_KEY_FILE" fastlane/AuthKey_PQ2AAF864L.p8
                     """
                 }
             }
