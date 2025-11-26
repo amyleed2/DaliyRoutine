@@ -1,0 +1,118 @@
+[17:22:15]: [33mfastlane detected a Gemfile in the current directory[0m
+[17:22:15]: [33mHowever, it seems like you didn't use `bundle exec`[0m
+[17:22:15]: [33mTo launch fastlane faster, please use[0m
+[17:22:15]: 
+[17:22:15]: [36m$ bundle exec fastlane beta --verbose[0m
+[17:22:15]: 
+[17:22:15]: [33mGet started using a Gemfile for fastlane https://docs.fastlane.tools/getting-started/ios/setup/#use-a-gemfile[0m
+DEBUG [2025-11-19 17:22:15.73]: Checking if there are any plugins that should be loaded...
+Successfully loaded Appfile at path '/Users/ezyeun/Desktop/Workspace/02_Personal/DailyRoutine/fastlane/Appfile'
+- app_identifier: 'com.ezyeun.ios.dailyroutine'
+- apple_id: 'lawra20@naver.com'
+- itc_team_id: '128304268'
+- team_id: '7CJ6R87Q3T'
+-------
+INFO [2025-11-19 17:22:15.83]: ------------------------------
+INFO [2025-11-19 17:22:15.83]: --- Step: default_platform ---
+INFO [2025-11-19 17:22:15.83]: ------------------------------
+INFO [2025-11-19 17:22:15.83]: Driving the lane 'ios beta' 🚀
+INFO [2025-11-19 17:22:15.83]: 🔐 Step 1: 프로비저닝 프로필 다운로드 중...
+INFO [2025-11-19 17:22:15.84]: ------------------
+INFO [2025-11-19 17:22:15.84]: --- Step: sigh ---
+INFO [2025-11-19 17:22:15.84]: ------------------
+
++-------------------------------------------------------------------+
+|                     Summary for sigh 2.228.0                      |
++-------------------------------------+-----------------------------+
+| app_identifier                      | com.ezyeun.ios.dailyroutine |
+| username                            | lawra20@naver.com           |
+| team_id                             | 7CJ6R87Q3T                  |
+| provisioning_name                   | Daily Routine Distribution  |
+| readonly                            | true                        |
+| adhoc                               | false                       |
+| developer_id                        | false                       |
+| development                         | false                       |
+| skip_install                        | false                       |
+| force                               | false                       |
+| include_mac_in_profiles             | false                       |
+| ignore_profiles_with_different_name | false                       |
+| skip_fetch_profiles                 | false                       |
+| include_all_certificates            | false                       |
+| skip_certificate_verification       | false                       |
+| platform                            | ios                         |
+| fail_on_name_taken                  | false                       |
++-------------------------------------+-----------------------------+
+
+INFO [2025-11-19 17:22:15.85]: Starting login with user 'lawra20@naver.com'
+Reading keychain entry, because either user or password were empty
+-------------------------------------------------------------------------------------
+Please provide your Apple Developer Program account credentials
+The login information you enter will be stored in your macOS Keychain
+You can also pass the password using the `FASTLANE_PASSWORD` environment variable
+See more information about it on GitHub: https://github.com/fastlane/fastlane/tree/master/credentials_manager
+-------------------------------------------------------------------------------------
+WARN [2025-11-19 17:22:15.86]: Lane Context:
+INFO [2025-11-19 17:22:15.86]: {DEFAULT_PLATFORM: :ios, PLATFORM_NAME: :ios, LANE_NAME: "ios beta"}
+ERROR [2025-11-19 17:22:15.86]: Called from Fastfile at line 23
+ERROR [2025-11-19 17:22:15.86]: ```
+ERROR [2025-11-19 17:22:15.86]:     21:	    puts "🔐 Step 1: 프로비저닝 프로필 다운로드 중..."
+ERROR [2025-11-19 17:22:15.86]:     22:	    # 프로비저닝 프로필 다운로드
+ERROR [2025-11-19 17:22:15.86]:  => 23:	    sigh(
+ERROR [2025-11-19 17:22:15.86]:     24:	      app_identifier: "com.ezyeun.ios.dailyroutine",
+ERROR [2025-11-19 17:22:15.86]:     25:	      username: "lawra20@naver.com",
+ERROR [2025-11-19 17:22:15.86]: ```
+ERROR [2025-11-19 17:22:15.86]: Missing password for user lawra20@naver.com, and running in non-interactive shell
+INFO [2025-11-19 17:22:15.86]: Successfully generated documentation at path '/Users/ezyeun/Desktop/Workspace/02_Personal/DailyRoutine/fastlane/README.md'
+
++---------------------------------------+
+|           fastlane summary            |
++------+------------------+-------------+
+| Step | Action           | Time (in s) |
++------+------------------+-------------+
+| 1    | default_platform | 0           |
+| 💥   | sigh             | 0           |
++------+------------------+-------------+
+
+ERROR [2025-11-19 17:22:15.87]: fastlane finished with errors
+
+Looking for related GitHub issues on fastlane/fastlane...
+Search query: Missing password for user lawra20@naver.com, and running in non-interactive shell
+
+URL: https://api.github.com/search/issues?q=Missing%20password%20for%20user%20lawra20%40naver.com%2C%20and%20running%20in%20non-interactive%20shell+repo:fastlane/fastlane
+ERROR [2025-11-19 17:22:15.91]: Error finding relevant GitHub issues: SSL_connect returned=1 errno=0 peeraddr=20.200.245.245:443 state=error: certificate verify failed (unable to get local issuer certificate)
+/opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/credentials_manager/lib/credentials_manager/account_manager.rb:135:in 'CredentialsManager::AccountManager#ask_for_login': [!] Missing password for user lawra20@naver.com, and running in non-interactive shell (RuntimeError)
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/credentials_manager/lib/credentials_manager/account_manager.rb:56:in 'CredentialsManager::AccountManager#password'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/spaceship/lib/spaceship/client.rb:383:in 'Spaceship::Client#login'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/spaceship/lib/spaceship/client.rb:355:in 'Spaceship::Client.login'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/spaceship/lib/spaceship/portal/spaceship.rb:25:in 'Spaceship::Portal.login'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/spaceship/lib/spaceship/connect_api/client.rb:55:in 'Spaceship::ConnectAPI::Client.login'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/spaceship/lib/spaceship/connect_api/spaceship.rb:85:in 'Spaceship::ConnectAPI.login'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/sigh/lib/sigh/runner.rb:33:in 'Sigh::Runner#run'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/sigh/lib/sigh/manager.rb:8:in 'Sigh::Manager.start'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/fastlane/lib/fastlane/actions/get_provisioning_profile.rb:24:in 'Fastlane::Actions::GetProvisioningProfileAction.run'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/fastlane/lib/fastlane/runner.rb:263:in 'block (2 levels) in Fastlane::Runner#execute_action'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/fastlane/lib/fastlane/actions/actions_helper.rb:69:in 'Fastlane::Actions.execute_action'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/fastlane/lib/fastlane/runner.rb:255:in 'block in Fastlane::Runner#execute_action'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/fastlane/lib/fastlane/runner.rb:229:in 'Dir.chdir'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/fastlane/lib/fastlane/runner.rb:229:in 'Fastlane::Runner#execute_action'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/fastlane/lib/fastlane/runner.rb:157:in 'Fastlane::Runner#trigger_action_by_name'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/fastlane/lib/fastlane/fast_file.rb:159:in 'Fastlane::FastFile#method_missing'
+	from Fastfile:23:in 'block (2 levels) in Fastlane::FastFile#parsing_binding'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/fastlane/lib/fastlane/lane.rb:41:in 'Fastlane::Lane#call'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/fastlane/lib/fastlane/runner.rb:49:in 'block in Fastlane::Runner#execute'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/fastlane/lib/fastlane/runner.rb:45:in 'Dir.chdir'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/fastlane/lib/fastlane/runner.rb:45:in 'Fastlane::Runner#execute'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/fastlane/lib/fastlane/lane_manager.rb:46:in 'Fastlane::LaneManager.cruise_lane'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/fastlane/lib/fastlane/command_line_handler.rb:34:in 'Fastlane::CommandLineHandler.handle'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/fastlane/lib/fastlane/commands_generator.rb:110:in 'block (2 levels) in Fastlane::CommandsGenerator#run'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/commander-4.6.0/lib/commander/command.rb:187:in 'Commander::Command#call'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/commander-4.6.0/lib/commander/command.rb:157:in 'Commander::Command#run'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/commander-4.6.0/lib/commander/runner.rb:444:in 'Commander::Runner#run_active_command'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/fastlane_core/lib/fastlane_core/ui/fastlane_runner.rb:124:in 'Commander::Runner#run!'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/commander-4.6.0/lib/commander/delegates.rb:18:in 'Commander::Delegates#run!'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/fastlane/lib/fastlane/commands_generator.rb:363:in 'Fastlane::CommandsGenerator#run'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/fastlane/lib/fastlane/commands_generator.rb:43:in 'Fastlane::CommandsGenerator.start'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/fastlane/lib/fastlane/cli_tools_distributor.rb:123:in 'Fastlane::CLIToolsDistributor.take_off'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/gems/fastlane-2.228.0/bin/fastlane:23:in '<top (required)>'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/bin/fastlane:25:in 'Kernel#load'
+	from /opt/homebrew/Cellar/fastlane/2.228.0/libexec/bin/fastlane:25:in '<main>'
