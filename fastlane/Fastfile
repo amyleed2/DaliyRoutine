@@ -1,0 +1,138 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+platform :ios do
+  desc "Push a new beta build to TestFlight"
+  lane :beta do
+    build_app(
+      scheme: "DailyRoutine",
+      export_method: "app-store",  # App Store용 빌드
+      export_options: {
+        provisioningProfiles: {
+          "com.ezyeun.ios.dailyroutine" => "Daily Routine Distribution Profile"
+        }
+      }
+    )
+    api_key = app_store_connect_api_key(
+      key_id: "PQ2AAF864L",
+      issuer_id: "d506bc25-23b2-4a16-99e8-ec6e685db84f",
+      key_filepath: "./fastlane/AuthKey_PQ2AAF864L.p8",
+      in_house: false
+    )
+
+    upload_to_testflight(
+      api_key: api_key
+    )
+  end
+
+  desc "Build for Release to TestFlight"
+  lane :release do    
+    add_build_number(app_id: "com.ezyeun.ios.dailyroutine")
+
+    build_app(
+      scheme: "DailyRoutine",
+      export_method: "app-store",  # App Store용 빌드
+      export_options: {
+        provisioningProfiles: {
+          "com.ezyeun.ios.dailyroutine" => "Daily Routine Distribution Profile"
+        }
+      }
+    )
+
+    api_key = app_store_connect_api_key(
+      key_id: "PQ2AAF864L",
+      issuer_id: "d506bc25-23b2-4a16-99e8-ec6e685db84f",
+      key_filepath: "./fastlane/AuthKey_PQ2AAF864L.p8",
+      in_house: false
+    )
+
+    upload_to_testflight(
+      api_key: api_key
+    )
+  end
+
+  lane :add_build_number do |options|
+    appId = options[:app_id]
+    
+    # 현재 빌드 버전 가져오기 (예: "1.0.0.1")
+    current_build = get_build_number(xcodeproj: "DailyRoutine.xcodeproj")
+    version_parts = current_build.split(".").map(&:to_i)
+    
+    # 버전이 4자리가 아니면 기본값 설정
+    if version_parts.length != 4
+      version_parts = [1, 0, 0, 1]
+    end
+    
+    major = version_parts[0]
+    minor = version_parts[1]
+    patch = version_parts[2]
+    build = version_parts[3]
+    
+    # 빌드 번호 증가
+    build += 1
+    
+    # 빌드가 두 자리(10)가 되면 patch 증가, build는 1로 초기화
+    if build >= 10
+      patch += 1
+      build = 1
+      
+      # patch가 두 자리(10)가 되면 minor 증가, patch는 0으로 초기화
+      if patch >= 10
+        minor += 1
+        patch = 0
+      end
+    end
+    
+    # 새로운 빌드 버전 생성
+    new_build_number = "#{major}.#{minor}.#{patch}.#{build}"
+    
+    # 빌드 번호 업데이트
+    increment_build_number({
+      build_number: new_build_number
+    })
+    
+    puts "Build number updated: #{current_build} → #{new_build_number}"
+  end
+
+
+#----------------------------------- 빌드 버전 증가 (x.x.x.x) start -------------------------------------#
+private_lane :increase_build_version do
+
+  if ENV['PLIST_PATH'] != nil
+
+    # plist에서 번들 버전 가져온다.
+    before_identifier = get_info_plist_value(path:ENV['PLIST_PATH'], key:"CFBundleVersion")
+    version_array = before_identifier.split(".").map(&:to_i)
+    next_version_number = ""
+    # 마지막 버전을 하나 올린다.
+    if version_array.count < 5
+      version_array[3] = version_array[3] + 1
+      next_version_number = version_array.join(".")
+    end
+
+    # 변경된 버전 정보를 Plist에 저장
+    set_info_plist_value(path:ENV['PLIST_PATH'], key:"CFBundleVersion", value:next_version_number.to_s)
+    set_info_plist_value(path:ENV['PLIST_PATH_NOTI_SERVICE'], key:"CFBundleVersion", value:next_version_number.to_s)
+    set_info_plist_value(path:ENV['PLIST_PATH_NOTI_CONTENT'], key:"CFBundleVersion", value:next_version_number.to_s)
+
+  else
+    puts("do foreach")
+    execute_for_all_envs{ increase_build_version }
+  end
+end
+#----------------------------------- 빌드 버전 증가 (x.x.x.x) end -------------------------------------#
+end
