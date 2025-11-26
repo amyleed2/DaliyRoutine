@@ -16,6 +16,15 @@ pipeline {
             }
         }
 
+        stage('Install Dependencies') {
+            steps {
+                sh """
+                brew install fastlane || true
+                gem install fastlane --user-install || true
+                """
+            }
+        }
+
         stage('Prepare API Key') {
             steps {
                 withCredentials([file(credentialsId: 'APPLE_API_KEY', variable: 'API_KEY_FILE')]) {
@@ -30,6 +39,7 @@ pipeline {
         stage('Fastlane TestFlight Upload') {
             steps {
                 sh """
+        	export PATH=/opt/homebrew/bin:\$PATH
                 cd fastlane
                 fastlane release
                 """
