@@ -58,52 +58,50 @@ pipeline {
         }
 
         stage('Commit Build Number') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'github_token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-                    sh '''
-                    git config user.email "amy.lee.d2@gmail.com"
-                    git config user.name "amyleed2"
-                    git add DailyRoutine.xcodeproj/project.pbxproj
-                    
-                    if ! git diff --cached --quiet; then
-                        BUILD_NUM=$(agvtool what-version -terse | head -1)
-                	git commit -m "[Jenkins] Bump build number to ${BUILD_NUM}"
-                	git push https://$GIT_USERNAME:$GIT_PASSWORD@github.com/amyleed2/DaliyRoutine.git HEAD:main
-                	echo "✅ Build number committed and pushed"
-                    else
-                        echo "ℹ️  No changes to commit"
-                    fi
-                    '''
-                }
-            }
-        }
-    }
+    steps {
+        withCredentials([usernamePassword(credentialsId: 'github_token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+            sh '''
+            git config user.email "amy.lee.d2@gmail.com"
+            git config user.name "amyleed2"
+            git add DailyRoutine.xcodeproj/project.pbxproj
 
-post {
-    success {
-            echo "🎉 TestFlight 업로드 성공!"
-
-        script {
-
-            sh """
-            curl -X POST -H 'Content-Type: application/json' -d '{
-                "chat_id": "${env.TELEGRAM_CHAT_ID}",
-                "text": "✅ 빌드 성공 - ${env.JOB_NAME} #${env.BUILD_NUMBER}"
-            }' "https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage"
-            """
-        }
-    }
-    failure {
-            echo "❌ TestFlight 업로드 실패. Console Output을 확인하세요."
-
-        script {
-            sh """
-            curl -X POST -H 'Content-Type: application/json' -d '{
-                "chat_id": "${env.TELEGRAM_CHAT_ID}",
-                "text": "❌ 빌드 실패 - ${env.JOB_NAME} #${env.BUILD_NUMBER}"
-            }' "https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage"
-            """
+            if ! git diff --cached --quiet; then
+                BUILD_NUM=$(agvtool what-version -terse | head -1)
+                git commit -m "[Jenkins] Bump build number to ${BUILD_NUM}"
+                
+                # credential helper 방식으로 인증
+                git config credential.helper store
+                echo "https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com" > ~/.git-credentials
+                git push origin HEAD:main
+                rm -f ~/.git-credentials
+                
+                echo "✅ Build number committed and pushed"
+            else
+                echo "ℹ️  No changes to commit"
+            fi
+            '''
         }
     }
 }
+
+
+	post {
+    		success {
+        		echo "🎉 TestFlight 업로드 성공!"
+        		sh '''
+        		curl -s -X POST https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage \
+           		 -d chat_id="$TELEGRAM_CHAT_ID" \
+           		 -d text="✅ 빌드 성공 - $JOB_NAME #$BUILD_NUMBER"
+        		'''
+    		}
+    		failure {
+       			 echo "❌ TestFlight 업로드 실패. Console Output을 확인하세요."
+        		sh '''
+        		curl -s -X POST https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage \
+          		  -d chat_id="$TELEGRAM_CHAT_ID" \
+          		  -d text="❌ 빌드 실패 - $JOB_NAME #$BUILD_NUMBER"
+       			 '''
+    		}
+	}
+
 }
