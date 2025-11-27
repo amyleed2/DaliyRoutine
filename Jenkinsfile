@@ -20,14 +20,11 @@ pipeline {
     }
 
     stages {
-	stage('Debug Webhook Vars') {
-    		steps {
-        		echo "DEBUG ref=${ref}"
-        		echo "DEBUG commit_message=${commit_message}"
-    		}
-	}
 
         stage('Checkout') {
+            when {
+                expression { env.ref == 'refs/heads/main' }
+            }
             steps {
                 git branch: "${BRANCH}",
                     credentialsId: 'github_token',
@@ -36,6 +33,9 @@ pipeline {
         }
 
         stage('Install Dependencies') {
+            when {
+                expression { env.ref == 'refs/heads/main' }
+            }
             steps {
                 sh """
                 brew install fastlane || true
@@ -45,6 +45,9 @@ pipeline {
         }
 
         stage('Prepare API Key') {
+            when {
+                expression { env.ref == 'refs/heads/main' }
+            }
             steps {
                 withCredentials([file(credentialsId: 'APPLE_API_KEY', variable: 'API_KEY_FILE')]) {
                     sh """
@@ -56,6 +59,9 @@ pipeline {
         }
 
         stage('Fastlane TestFlight Upload') {
+            when {
+                expression { env.ref == 'refs/heads/main' }
+            }
             steps {
                 sh """
                 fastlane release
@@ -64,6 +70,9 @@ pipeline {
         }
 
         stage('Commit Build Number') {
+            when {
+                expression { env.ref == 'refs/heads/main' }
+            }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github_token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
                     sh '''
