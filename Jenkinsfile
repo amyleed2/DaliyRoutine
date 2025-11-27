@@ -16,7 +16,7 @@ pipeline {
 
         // Jenkins Credentials에 저장된 Token 불러오기
         TELEGRAM_BOT_TOKEN = credentials('TELEGRAM_BOT_TOKEN')
-        TELEGRAM_CHAT_ID = 'credentials('TELEGRAM_CHAT_ID')
+        TELEGRAM_CHAT_ID = '8567999419'    // chat_id는 그냥 써도 됨
     }
 
     stages {
@@ -66,10 +66,10 @@ pipeline {
                     git add DailyRoutine.xcodeproj/project.pbxproj
                     
                     if ! git diff --cached --quiet; then
-                	BUILD_NUM=$(agvtool what-version -terse | head -1)
-               		git commit -m "[Jenkins] Bump build number to ${BUILD_NUM}"
-			git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/amyleed2/DaliyRoutine.git HEAD:main
-                        echo "✅ Build number committed and pushed"
+                        BUILD_NUM=$(agvtool what-version -terse | head -1)
+                	git commit -m "[Jenkins] Bump build number to ${BUILD_NUM}"
+                	git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/amyleed2/DaliyRoutine.git HEAD:main
+                	echo "✅ Build number committed and pushed"
                     else
                         echo "ℹ️  No changes to commit"
                     fi
