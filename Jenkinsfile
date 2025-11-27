@@ -76,20 +76,21 @@ pipeline {
         stage('Commit Build Number') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github_token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-                    sh """
+                    sh '''
                     git config user.email "amy.lee.d2@gmail.com"
                     git config user.name "amyleed2"
                     git add DailyRoutine.xcodeproj/project.pbxproj
                     
                     # 변경사항이 있을 때만 커밋
                     if ! git diff --cached --quiet; then
-                        git commit -m "[Jenkins] Bump build number to \$(cd DailyRoutine.xcodeproj && agvtool what-version -terse)"
-                        git push https://\${GIT_USERNAME}:\${GIT_PASSWORD}@github.com/amyleed2/DaliyRoutine.git HEAD:${BRANCH}
+                        BUILD_NUM=$(agvtool what-version -terse)
+                        git commit -m "[Jenkins] Bump build number to ${BUILD_NUM}"
+                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/amyleed2/DaliyRoutine.git HEAD:main
                         echo "✅ Build number committed and pushed"
                     else
                         echo "ℹ️  No changes to commit"
                     fi
-                    """
+                    '''
                 }
             }
         }
