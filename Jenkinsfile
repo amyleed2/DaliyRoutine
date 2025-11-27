@@ -4,6 +4,9 @@ pipeline {
     environment {
         GIT_REPO = "https://github.com/amyleed2/DaliyRoutine.git"
         BRANCH = "main"
+        RBENV_ROOT = "$HOME/.rbenv"
+        PATH = "$HOME/.rbenv/shims:$HOME/.rbenv/bin:/opt/homebrew/bin:$PATH"
+        RUBY_VERSION = "3.2.2"
     }
 
     stages {
@@ -21,6 +24,9 @@ pipeline {
                 sh """
                 brew install fastlane || true
                 gem install fastlane --user-install || true
+                rbenv install -s ${RUBY_VERSION}
+                rbenv global ${RUBY_VERSION}
+                ruby -v
                 """
             }
         }
@@ -39,7 +45,6 @@ pipeline {
         stage('Fastlane TestFlight Upload') {
             steps {
                 sh """
-        	export PATH=/opt/homebrew/bin:\$PATH
                 cd fastlane
                 fastlane release
                 """
