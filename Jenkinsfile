@@ -5,7 +5,7 @@ pipeline {
         GIT_REPO = "https://github.com/amyleed2/DaliyRoutine.git"
         BRANCH   = "main"
 
-        // rbenv 관련
+        // rbenv 관련 
         RBENV_ROOT = "$HOME/.rbenv"
         PATH       = "$HOME/.rbenv/shims:$HOME/.rbenv/bin:/opt/homebrew/bin:$PATH"
         RUBY_VERSION = "3.2.2"
