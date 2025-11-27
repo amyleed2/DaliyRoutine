@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    // Jenkins 자신이 만든 커밋은 빌드하지 않음
-    options {
-        skipDefaultCheckout()
-    }
-
     environment {
         GIT_REPO = "https://github.com/amyleed2/DaliyRoutine.git"
         BRANCH = "main"
@@ -18,27 +13,16 @@ pipeline {
         // UTF-8 환경 변수
         LANG = "en_US.UTF-8"
         LC_ALL = "en_US.UTF-8"
+
+        // Jenkins Credentials에 저장된 Token 불러오기
+        TELEGRAM_BOT_TOKEN = credentials('TELEGRAM_BOT_TOKEN')
+        TELEGRAM_CHAT_ID = '8567999419'    // chat_id는 그냥 써도 됨
     }
 
     stages {
 
         stage('Checkout') {
             steps {
-                script {
-                    def changeLogSets = currentBuild.changeSets
-                    for (int i = 0; i < changeLogSets.size(); i++) {
-                        def entries = changeLogSets[i].items
-                        for (int j = 0; j < entries.length; j++) {
-                            def entry = entries[j]
-                            if (entry.msg.contains('[Jenkins]')) {
-                                echo "⏭️  Skipping build - commit by Jenkins: ${entry.msg}"
-                                currentBuild.result = 'NOT_BUILT'
-                                error('Skipping Jenkins auto-commit')
-                            }
-                        }
-                    }
-                }
-                
                 git branch: "${BRANCH}",
                     credentialsId: 'github_token',
                     url: "${GIT_REPO}"
@@ -48,8 +32,8 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh """
-                gem install bundler --user-install || true
-                bundle install
+                brew install fastlane || true
+                gem install fastlane --user-install || true
                 """
             }
         }
@@ -68,30 +52,8 @@ pipeline {
         stage('Fastlane TestFlight Upload') {
             steps {
                 sh """
-                bundle exec fastlane release
+                fastlane release
                 """
-            }
-        }
-
-        stage('Commit Build Number') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'github_token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-                    sh '''
-                    git config user.email "amy.lee.d2@gmail.com"
-                    git config user.name "amyleed2"
-                    git add DailyRoutine.xcodeproj/project.pbxproj
-                    
-                    # 변경사항이 있을 때만 커밋
-                    if ! git diff --cached --quiet; then
-                        BUILD_NUM=$(agvtool what-version -terse)
-                        git commit -m "[Jenkins] Bump build number to ${BUILD_NUM}"
-                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/amyleed2/DaliyRoutine.git HEAD:main
-                        echo "✅ Build number committed and pushed"
-                    else
-                        echo "ℹ️  No changes to commit"
-                    fi
-                    '''
-                }
             }
         }
     }
@@ -99,11 +61,23 @@ pipeline {
     post {
         success {
             echo "🎉 TestFlight 업로드 성공!"
-            slackSend(channel: '#jenkins_build_ios', color: 'good', message: "✅ 빌드 성공 - ${env.JOB_NAME} #${env.BUILD_NUMBER}")
+
+            sh """
+            curl -X POST https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage \
+            -d chat_id=${TELEGRAM_CHAT_ID} \
+            -d text="🎉 *Build Success!*%0AJob: ${JOB_NAME}%0ABuild: #${BUILD_NUMBER}" \
+            -d parse_mode=Markdown
+            """
         }
         failure {
             echo "❌ TestFlight 업로드 실패. Console Output을 확인하세요."
-            slackSend(channel: '#jenkins_build_ios', color: 'danger', message: "❌ 빌드 실패 - ${env.JOB_NAME} #${env.BUILD_NUMBER}")
+
+            sh """
+            curl -X POST https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage \
+            -d chat_id=${TELEGRAM_CHAT_ID} \
+            -d text="❗ *Build FAILED* ❗%0AJob: ${JOB_NAME}%0ABuild: #${BUILD_NUMBER}" \
+            -d parse_mode=Markdown
+            """
         }
     }
 }
