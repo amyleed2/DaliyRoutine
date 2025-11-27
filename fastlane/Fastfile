@@ -68,8 +68,10 @@ platform :ios do
   lane :add_build_number do |options|
     appId = options[:app_id]
     
-    # 프로젝트 경로 설정 (fastlane 디렉토리 기준 상위 폴더)
-    project_path = "../DailyRoutine.xcodeproj"
+    # 프로젝트 경로 설정 (절대 경로로 변환)
+    project_path = File.expand_path("../DailyRoutine.xcodeproj", File.dirname(__FILE__))
+    
+    puts "Project path: #{project_path}"
     
     # 현재 빌드 버전 가져오기 (예: "1.0.0.1")
     current_build = get_build_number(xcodeproj: project_path)
@@ -118,11 +120,9 @@ platform :ios do
     # xcodeproj 파일을 직접 수정
     require 'xcodeproj'
     
-    # 절대 경로로 변환
-    absolute_project_path = File.expand_path(project_path, File.dirname(__FILE__))
-    puts "Opening project at: #{absolute_project_path}"
+    puts "Opening project at: #{project_path}"
     
-    project = Xcodeproj::Project.open(absolute_project_path)
+    project = Xcodeproj::Project.open(project_path)
     
     # 메인 앱 타겟만 업데이트 (테스트 타겟 제외)
     project.targets.each do |target|
