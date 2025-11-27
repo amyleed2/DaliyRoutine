@@ -107,14 +107,18 @@ platform :ios do
     
     puts "Build number updated: #{current_build} → #{new_build_number}"
     
-    # Info.plist에서 직접 업데이트 (xcodeproj가 아닌 plist 수정)
-    update_info_plist(
-      xcodeproj: "DailyRoutine.xcodeproj",
-      plist_path: "DailyRoutine/Info.plist",
-      block: proc do |plist|
-        plist["CFBundleVersion"] = new_build_number
+    # xcodeproj 파일을 직접 수정
+    require 'xcodeproj'
+    project_path = "DailyRoutine.xcodeproj"
+    project = Xcodeproj::Project.open(project_path)
+    
+    project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings["CURRENT_PROJECT_VERSION"] = new_build_number
       end
-    )
+    end
+    
+    project.save
   end
 
 
