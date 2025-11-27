@@ -68,7 +68,7 @@ pipeline {
                     if ! git diff --cached --quiet; then
                         BUILD_NUM=$(agvtool what-version -terse | head -1)
                 	git commit -m "[Jenkins] Bump build number to ${BUILD_NUM}"
-                	git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/amyleed2/DaliyRoutine.git HEAD:main
+                	git push https://$GIT_USERNAME:$GIT_PASSWORD@github.com/amyleed2/DaliyRoutine.git HEAD:main
                 	echo "✅ Build number committed and pushed"
                     else
                         echo "ℹ️  No changes to commit"
