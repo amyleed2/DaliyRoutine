@@ -69,7 +69,6 @@ pipeline {
                 BUILD_NUM=$(agvtool what-version -terse | head -1)
                 git commit -m "[Jenkins] Bump build number to ${BUILD_NUM}"
                 
-                # credential helper 방식으로 인증
                 git config credential.helper store
                 echo "https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com" > ~/.git-credentials
                 git push origin HEAD:main
