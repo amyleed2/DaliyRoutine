@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    // Jenkins 자신이 만든 커밋은 빌드하지 않음
+    options {
+        skipDefaultCheckout()
+    }
+
     environment {
         GIT_REPO = "https://github.com/amyleed2/DaliyRoutine.git"
         BRANCH = "main"
@@ -19,6 +24,21 @@ pipeline {
 
         stage('Checkout') {
             steps {
+                script {
+                    def changeLogSets = currentBuild.changeSets
+                    for (int i = 0; i < changeLogSets.size(); i++) {
+                        def entries = changeLogSets[i].items
+                        for (int j = 0; j < entries.length; j++) {
+                            def entry = entries[j]
+                            if (entry.msg.contains('[Jenkins]')) {
+                                echo "⏭️  Skipping build - commit by Jenkins: ${entry.msg}"
+                                currentBuild.result = 'NOT_BUILT'
+                                error('Skipping Jenkins auto-commit')
+                            }
+                        }
+                    }
+                }
+                
                 git branch: "${BRANCH}",
                     credentialsId: 'github_token',
                     url: "${GIT_REPO}"
@@ -28,8 +48,8 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh """
-                brew install fastlane || true
-                gem install fastlane --user-install || true
+                gem install bundler --user-install || true
+                bundle install
                 """
             }
         }
@@ -48,8 +68,29 @@ pipeline {
         stage('Fastlane TestFlight Upload') {
             steps {
                 sh """
-                fastlane release
+                bundle exec fastlane release
                 """
+            }
+        }
+
+        stage('Commit Build Number') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'github_token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                    sh """
+                    git config user.email "amy.lee.d2@gmail.com"
+                    git config user.name "amyleed2"
+                    git add DailyRoutine.xcodeproj/project.pbxproj
+                    
+                    # 변경사항이 있을 때만 커밋
+                    if ! git diff --cached --quiet; then
+                        git commit -m "[Jenkins] Bump build number to \$(cd DailyRoutine.xcodeproj && agvtool what-version -terse)"
+                        git push https://\${GIT_USERNAME}:\${GIT_PASSWORD}@github.com/amyleed2/DaliyRoutine.git HEAD:${BRANCH}
+                        echo "✅ Build number committed and pushed"
+                    else
+                        echo "ℹ️  No changes to commit"
+                    fi
+                    """
+                }
             }
         }
     }

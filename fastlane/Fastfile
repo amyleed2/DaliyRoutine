@@ -68,14 +68,20 @@ platform :ios do
   lane :add_build_number do |options|
     appId = options[:app_id]
     
+    # 프로젝트 경로 설정 (fastlane 디렉토리 기준 상위 폴더)
+    project_path = "../DailyRoutine.xcodeproj"
+    
     # 현재 빌드 버전 가져오기 (예: "1.0.0.1")
-    current_build = get_build_number(xcodeproj: "DailyRoutine.xcodeproj")
+    current_build = get_build_number(xcodeproj: project_path)
+    
+    puts "Current build number: #{current_build}"
     
     # 현재 빌드가 4자리 형식인지 확인
     version_parts = current_build.to_s.split(".").map(&:to_i)
     
     # 버전이 4자리가 아니면 1.0.0.1부터 시작
     if version_parts.length != 4
+      puts "⚠️  Build number is not in 4-part format. Resetting to 1.0.0.1"
       major = 1
       minor = 0
       patch = 0
@@ -93,11 +99,13 @@ platform :ios do
       if build >= 10
         patch += 1
         build = 1
+        puts "📦 Patch incremented to #{patch}, build reset to 1"
         
         # patch가 두 자리(10)가 되면 minor 증가, patch는 0으로 초기화
         if patch >= 10
           minor += 1
           patch = 0
+          puts "📦 Minor incremented to #{minor}, patch reset to 0"
         end
       end
     end
@@ -105,20 +113,31 @@ platform :ios do
     # 새로운 빌드 버전 생성
     new_build_number = "#{major}.#{minor}.#{patch}.#{build}"
     
-    puts "Build number updated: #{current_build} → #{new_build_number}"
+    puts "✅ Build number updated: #{current_build} → #{new_build_number}"
     
     # xcodeproj 파일을 직접 수정
     require 'xcodeproj'
-    project_path = "DailyRoutine.xcodeproj"
-    project = Xcodeproj::Project.open(project_path)
     
+    # 절대 경로로 변환
+    absolute_project_path = File.expand_path(project_path, File.dirname(__FILE__))
+    puts "Opening project at: #{absolute_project_path}"
+    
+    project = Xcodeproj::Project.open(absolute_project_path)
+    
+    # 메인 앱 타겟만 업데이트 (테스트 타겟 제외)
     project.targets.each do |target|
+      # UI 테스트나 유닛 테스트 타겟 제외
+      next if target.name.include?("Tests")
+      
+      puts "Updating target: #{target.name}"
       target.build_configurations.each do |config|
         config.build_settings["CURRENT_PROJECT_VERSION"] = new_build_number
+        puts "  - #{config.name}: #{new_build_number}"
       end
     end
     
     project.save
+    puts "💾 Project saved successfully"
   end
 
 
