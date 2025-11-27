@@ -32,16 +32,22 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		1EC3362D2ECD87960051B5E7 /* DailyRoutine */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = DailyRoutine;
 			sourceTree = "<group>";
 		};
 		1EC3363B2ECD87970051B5E7 /* DailyRoutineTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = DailyRoutineTests;
 			sourceTree = "<group>";
 		};
 		1EC336452ECD87970051B5E7 /* DailyRoutineUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = DailyRoutineUITests;
 			sourceTree = "<group>";
 		};
@@ -391,7 +397,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.0.0.4;
+				CURRENT_PROJECT_VERSION = 1.0.0.5;
 				DEVELOPMENT_TEAM = 7CJ6R87Q3T;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -432,7 +438,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.0.0.4;
+				CURRENT_PROJECT_VERSION = 1.0.0.5;
 				DEVELOPMENT_TEAM = 7CJ6R87Q3T;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
