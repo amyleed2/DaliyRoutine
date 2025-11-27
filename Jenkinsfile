@@ -86,19 +86,21 @@ pipeline {
     post {
         success {
             echo "🎉 TestFlight 업로드 성공!"
-            sh '''
-            curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
-                -d chat_id="$TELEGRAM_CHAT_ID" \
+            sh """
+        	curl -s -X POST https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage \
+        	-d chat_id=${TELEGRAM_CHAT_ID} \
                 -d text="✅ 빌드 성공 - $JOB_NAME #$BUILD_NUMBER"
-            '''
+        	"""
+        	"""
         }
         failure {
             echo "❌ TestFlight 업로드 실패. Console Output을 확인하세요."
-            sh '''
-            curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
-                -d chat_id="$TELEGRAM_CHAT_ID" \
-                -d text="❌ 빌드 실패 - $JOB_NAME #$BUILD_NUMBER"
-            '''
+            sh """
+        	curl -s -X POST https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage \
+        	-d chat_id=${TELEGRAM_CHAT_ID} \
+        	-d "text=❌ 빌드 실패 - ${JOB_NAME} #${BUILD_NUMBER}"
+        	"""
+        	"""
         }
     }
 }
