@@ -3,18 +3,18 @@ pipeline {
 
     environment {
         GIT_REPO = "https://github.com/amyleed2/DaliyRoutine.git"
-        BRANCH = "main"
+        BRANCH   = "main"
 
         // rbenv 관련
         RBENV_ROOT = "$HOME/.rbenv"
-        PATH = "$HOME/.rbenv/shims:$HOME/.rbenv/bin:/opt/homebrew/bin:$PATH"
+        PATH       = "$HOME/.rbenv/shims:$HOME/.rbenv/bin:/opt/homebrew/bin:$PATH"
         RUBY_VERSION = "3.2.2"
 
         // UTF-8 환경 변수
-        LANG = "en_US.UTF-8"
+        LANG   = "en_US.UTF-8"
         LC_ALL = "en_US.UTF-8"
 
-        // Jenkins Credentials에 저장된 Token 불러오기
+        // Telegram
         TELEGRAM_BOT_TOKEN = credentials('TELEGRAM_BOT_TOKEN')
         TELEGRAM_CHAT_ID   = '8567999419'
     }
@@ -81,13 +81,13 @@ pipeline {
                 }
             }
         }
-    } 
+    }
 
     post {
         success {
             echo "🎉 TestFlight 업로드 성공!"
             sh '''
-            curl -s -X POST https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage \
+            curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
                 -d chat_id="$TELEGRAM_CHAT_ID" \
                 -d text="✅ 빌드 성공 - $JOB_NAME #$BUILD_NUMBER"
             '''
@@ -95,10 +95,10 @@ pipeline {
         failure {
             echo "❌ TestFlight 업로드 실패. Console Output을 확인하세요."
             sh '''
-            curl -s -X POST https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage \
+            curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
                 -d chat_id="$TELEGRAM_CHAT_ID" \
                 -d text="❌ 빌드 실패 - $JOB_NAME #$BUILD_NUMBER"
             '''
         }
-    } 
-}  
+    }
+}
