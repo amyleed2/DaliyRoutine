@@ -20,6 +20,13 @@ pipeline {
     }
 
     stages {
+	stage('Debug Webhook Vars') {
+    		steps {
+        		echo "DEBUG ref=${ref}"
+        		echo "DEBUG commit_message=${commit_message}"
+    		}
+	}
+
         stage('Checkout') {
             steps {
                 git branch: "${BRANCH}",
