@@ -48,7 +48,6 @@ pipeline {
         stage('Fastlane TestFlight Upload') {
             steps {
                 sh """
-                cd fastlane
                 fastlane release
                 """
             }
