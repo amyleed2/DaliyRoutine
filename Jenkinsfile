@@ -58,9 +58,11 @@ pipeline {
     post {
         success {
             echo "🎉 TestFlight 업로드 성공!"
+            slackSend(channel: '#your-channel', color: 'good', message: "✅ 빌드 성공 - ${env.JOB_NAME} #${env.BUILD_NUMBER}")
         }
         failure {
             echo "❌ TestFlight 업로드 실패. Console Output을 확인하세요."
+            slackSend(channel: '#your-channel', color: 'danger', message: "❌ 빌드 실패 - ${env.JOB_NAME} #${env.BUILD_NUMBER}")
         }
     }
 }
