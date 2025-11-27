@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    options {
-         skipDefaultCheckout()
-    }
-
     environment {
         GIT_REPO = "https://github.com/amyleed2/DaliyRoutine.git"
         BRANCH   = "main"
@@ -25,11 +21,6 @@ pipeline {
 
     stages {
         stage('Checkout') {
-		when {
-	                not {
-                	 	changelog '.*\\[Jenkins\\].*'
-                	}
-            	}
             steps {
                 git branch: "${BRANCH}",
                     credentialsId: 'github_token',
