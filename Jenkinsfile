@@ -1,12 +1,6 @@
 pipeline {
     agent any
 
-    // Jenkins 자신이 만든 커밋은 빌드하지 않음
-    options {
-        // [Jenkins]로 시작하는 커밋 메시지는 빌드 스킵
-        skipDefaultCheckout()
-    }
-
     environment {
         GIT_REPO = "https://github.com/amyleed2/DaliyRoutine.git"
         BRANCH   = "main"
@@ -27,24 +21,12 @@ pipeline {
 
     stages {
         stage('Checkout') {
+		when {
+	                not {
+                	 	changelog '.*\\[Jenkins\\].*'
+                	}
+            	}
             steps {
-                script {
-                    // 커밋 메시지 확인
-                    def commitMessage = sh(
-                        script: "git log -1 --pretty=%B origin/${BRANCH}",
-                        returnStdout: true
-                    ).trim()
-                    
-                    echo "최근 커밋 메시지: ${commitMessage}"
-                    
-                    // [Jenkins]로 시작하는 커밋이면 빌드 중단
-                    if (commitMessage.startsWith('[Jenkins]')) {
-                        echo "⏭️  Jenkins 커밋이므로 빌드를 스킵합니다."
-                        currentBuild.result = 'NOT_BUILT'
-                        error('Jenkins 커밋 감지 - 빌드 스킵')
-                    }
-                }
-                
                 git branch: "${BRANCH}",
                     credentialsId: 'github_token',
                     url: "${GIT_REPO}"
