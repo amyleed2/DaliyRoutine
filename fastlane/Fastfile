@@ -63,8 +63,11 @@ platform :ios do
     )
 
     upload_to_testflight(
-      api_key: api_key
+  	api_key: api_key,
+ 	skip_waiting_for_build_processing: true,
+  	wait_for_uploaded_build: false
     )
+
   end
 
   lane :add_build_number do |options|
