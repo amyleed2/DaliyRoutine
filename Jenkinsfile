@@ -80,7 +80,7 @@ pipeline {
                     # Keychain 검색 리스트에 추가
                     security list-keychains -d user -s "$KEYCHAIN_PATH"
                     
-                    echo "✅ Keychain 언락 완료"
+                    echo "✅ Keychain 언락 완료."
                     '''
                 }
             }

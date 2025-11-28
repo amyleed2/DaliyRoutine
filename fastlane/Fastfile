@@ -41,7 +41,13 @@ platform :ios do
   end
 
   desc "Build for Release to TestFlight"
-  lane :release do    
+  lane :release do
+  	UI.message("DEBUG: Apple API key id = PQ2AAF864L")
+  	UI.message("DEBUG: App identifier = com.ezyeun.ios.dailyroutine")
+  	UI.message("DEBUG: Current directory = #{Dir.pwd}")
+  	UI.message("DEBUG: User = #{ENV['USER']}")
+  	UI.message("DEBUG: Fastlane session path = #{ENV['FASTLANE_SESSION']}")
+
     add_build_number(app_id: "com.ezyeun.ios.dailyroutine")
 
     build_app(
