@@ -14,6 +14,9 @@ pipeline {
         LANG   = "en_US.UTF-8"
         LC_ALL = "en_US.UTF-8"
 
+        // Keychain 설정
+        KEYCHAIN_PATH = "${HOME}/Library/Keychains/login.keychain-db"
+        
         // Telegram
         TELEGRAM_BOT_TOKEN = credentials('TELEGRAM_BOT_TOKEN')
         TELEGRAM_CHAT_ID   = '8567999419'
@@ -58,14 +61,37 @@ pipeline {
             }
         }
 
+        stage('Unlock Keychain') {
+            when {
+                expression { env.ref == 'refs/heads/main' }
+            }
+            steps {
+                withCredentials([string(credentialsId: 'KEYCHAIN_PASSWORD', variable: 'KEYCHAIN_PWD')]) {
+                    sh '''
+                    # Keychain 언락
+                    security unlock-keychain -p "$KEYCHAIN_PWD" "$KEYCHAIN_PATH"
+                    
+                    # Keychain 타임아웃 설정 (3600초 = 1시간)
+                    security set-keychain-settings -t 3600 -u "$KEYCHAIN_PATH"
+                    
+                    # 기본 Keychain으로 설정
+                    security default-keychain -s "$KEYCHAIN_PATH"
+                    
+                    # Keychain 검색 리스트에 추가
+                    security list-keychains -d user -s "$KEYCHAIN_PATH"
+                    
+                    echo "✅ Keychain 언락 완료"
+                    '''
+                }
+            }
+        }
+
         stage('Fastlane TestFlight Upload') {
             when {
                 expression { env.ref == 'refs/heads/main' }
             }
             steps {
         	sh """
-        	ls -R
-        	ls -l fastlane
         	fastlane release
         	"""
             }
