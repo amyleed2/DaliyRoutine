@@ -45,6 +45,9 @@ pipeline {
         }
 
         stage('Prepare API Key') {
+            when {
+                expression { env.ref == 'refs/heads/main' }
+            }
             steps {
                 withCredentials([file(credentialsId: 'APPLE_API_KEY', variable: 'API_KEY_FILE')]) {
                     sh """
