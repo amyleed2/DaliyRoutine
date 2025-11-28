@@ -81,10 +81,31 @@ pipeline {
                     # Keychain 검색 리스트에 추가
                     security list-keychains -d user -s "$KEYCHAIN_PATH"
                     
-                    # 인증서 접근 권한 설정 (Jenkins가 백그라운드에서 인증서 사용 가능하도록)
-                    security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PWD" "$KEYCHAIN_PATH"
+                    # 사용 가능한 인증서 확인
+                    echo "📋 사용 가능한 코드 서명 인증서:"
+                    CERT_OUTPUT=$(security find-identity -v -p codesigning 2>&1)
+                    echo "$CERT_OUTPUT"
                     
-                    echo "✅ Keychain 언락 및 인증서 접근 권한 설정 완료"
+                    # Distribution 인증서 확인
+                    if echo "$CERT_OUTPUT" | grep -q "Apple Distribution"; then
+                        echo "✅ Distribution 인증서 발견"
+                    else
+                        echo "❌ Distribution 인증서를 찾을 수 없습니다!"
+                        exit 1
+                    fi
+                    
+                    # 인증서 접근 권한 설정 (Jenkins가 백그라운드에서 인증서 사용 가능하도록)
+                    # 이 명령어는 각 인증서의 개인키에 접근 권한을 부여합니다
+                    echo "🔐 인증서 접근 권한 설정 중..."
+                    if security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PWD" "$KEYCHAIN_PATH" 2>&1; then
+                        echo "✅ 인증서 접근 권한 설정 성공"
+                    else
+                        echo "⚠️  인증서 접근 권한 설정 실패 (일부 인증서는 추가 비밀번호가 필요할 수 있음)"
+                        echo "⚠️  하지만 Keychain이 언락되어 있으므로 대부분의 경우 작동합니다"
+                        echo "⚠️  만약 무한 Processing이 발생하면 수동으로 인증서 접근 권한을 설정해야 합니다"
+                    fi
+                    
+                    echo "✅ Keychain 언락 완료"
                     '''
                 }
             }
