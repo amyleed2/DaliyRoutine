@@ -52,13 +52,15 @@ platform :ios do
 
     build_app(
       scheme: "DailyRoutine",
+      configuration: "Release",  # 명시적으로 Release 설정 사용 (Distribution 인증서)
       export_method: "app-store",  # App Store용 빌드
       export_options: {
         provisioningProfiles: {
           "com.ezyeun.ios.dailyroutine" => "Daily Routine Distribution Profile"
         },
         signingStyle: "manual",
-        compileBitcode: false
+        compileBitcode: false,
+        signingCertificate: "Apple Distribution"  # 명시적으로 Distribution 인증서 지정
       },
       xcodebuild_formatter: ""
     )
