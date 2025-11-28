@@ -81,7 +81,10 @@ pipeline {
                     # Keychain 검색 리스트에 추가
                     security list-keychains -d user -s "$KEYCHAIN_PATH"
                     
-                    echo "✅ Keychain 언락 완료"
+                    # 인증서 접근 권한 설정 (Jenkins가 백그라운드에서 인증서 사용 가능하도록)
+                    security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PWD" "$KEYCHAIN_PATH"
+                    
+                    echo "✅ Keychain 언락 및 인증서 접근 권한 설정 완료"
                     '''
                 }
             }

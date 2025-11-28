@@ -56,7 +56,9 @@ platform :ios do
       export_options: {
         provisioningProfiles: {
           "com.ezyeun.ios.dailyroutine" => "Daily Routine Distribution Profile"
-        }
+        },
+        signingStyle: "manual",
+        compileBitcode: false
       },
       xcodebuild_formatter: ""
     )
