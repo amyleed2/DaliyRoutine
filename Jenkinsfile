@@ -25,20 +25,27 @@ pipeline {
     stages {
 
         stage('Checkout') {
-            when {
-                expression { env.ref == 'refs/heads/main' }
-            }
             steps {
-                git branch: "${BRANCH}",
-                    credentialsId: 'github_token',
-                    url: "${GIT_REPO}"
+                script {
+                    // Generic Webhook Trigger의 Optional Filter가 이미 [Jenkins] 커밋을 필터링함
+                    echo "🔍 Webhook Variables:"
+                    echo "  - ref: ${env.ref ?: 'not set'}"
+                    echo "  - commit_message: ${env.commit_message ?: 'not set'}"
+                    
+                    checkout scm
+                    
+                    def commitMessage = sh(
+                        script: 'git log -1 --pretty=%B',
+                        returnStdout: true
+                    ).trim()
+                    
+                    echo "📝 최근 커밋: ${commitMessage}"
+                    echo "✅ 빌드 진행"
+                }
             }
         }
 
         stage('Install Dependencies') {
-            when {
-                expression { env.ref == 'refs/heads/main' }
-            }
             steps {
                 sh """
                 brew install fastlane || true
@@ -48,9 +55,6 @@ pipeline {
         }
 
         stage('Prepare API Key') {
-            when {
-                expression { env.ref == 'refs/heads/main' }
-            }
             steps {
                 withCredentials([file(credentialsId: 'APPLE_API_KEY', variable: 'API_KEY_FILE')]) {
                     sh """
@@ -62,9 +66,6 @@ pipeline {
         }
 
         stage('Unlock Keychain') {
-            when {
-                expression { env.ref == 'refs/heads/main' }
-            }
             steps {
                 withCredentials([string(credentialsId: 'KEYCHAIN_PASSWORD', variable: 'KEYCHAIN_PWD')]) {
                     sh '''
@@ -80,27 +81,23 @@ pipeline {
                     # Keychain 검색 리스트에 추가
                     security list-keychains -d user -s "$KEYCHAIN_PATH"
                     
-                    echo "✅ Keychain 언락 완료."
+                    echo "✅ Keychain 언락 완료"
                     '''
                 }
             }
         }
 
         stage('Fastlane TestFlight Upload') {
-            when {
-                expression { env.ref == 'refs/heads/main' }
-            }
             steps {
         	sh """
+        	echo "🚀 Fastlane 빌드 시작..."
         	fastlane release
+        	echo "✅ Fastlane 빌드 완료"
         	"""
             }
         }
 
         stage('Commit Build Number') {
-            when {
-                expression { env.ref == 'refs/heads/main' }
-            }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github_token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
                     sh '''
