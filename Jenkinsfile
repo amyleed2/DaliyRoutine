@@ -139,7 +139,17 @@ pipeline {
                     git add DailyRoutine.xcodeproj/project.pbxproj
 
                     if ! git diff --cached --quiet; then
-                        BUILD_NUM=$(agvtool what-version -terse | head -1)
+                        # Fastlane이 이미 빌드 번호를 증가시켰으므로, Release 설정의 빌드 번호를 가져옴
+                        # xcodebuild를 사용하여 Release 설정의 CURRENT_PROJECT_VERSION을 정확히 가져옴
+                        BUILD_NUM=$(xcodebuild -project DailyRoutine.xcodeproj -scheme DailyRoutine -configuration Release -showBuildSettings 2>/dev/null | grep "CURRENT_PROJECT_VERSION" | head -1 | sed -E 's/.*CURRENT_PROJECT_VERSION = ([^ ]+).*/\1/' | xargs)
+                        
+                        # 만약 위 방법이 실패하면 agvtool 사용
+                        if [ -z "$BUILD_NUM" ] || [ "$BUILD_NUM" = "" ]; then
+                            echo "⚠️  xcodebuild로 빌드 번호를 가져오지 못했습니다. agvtool 사용..."
+                            BUILD_NUM=$(agvtool what-version -terse | grep -v "^$" | head -1 | xargs)
+                        fi
+                        
+                        echo "📦 Committing build number: ${BUILD_NUM}"
                         git commit -m "[Jenkins] Bump build number to ${BUILD_NUM}"
 
                         git config credential.helper store
