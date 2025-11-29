@@ -1,7 +1,16 @@
-# Keychain 인증서 접근 권한 수동 설정 가이드
+# Keychain 인증서 Trust 설정 수동 설정 가이드
 
 ## 🎯 목적
-Jenkins가 백그라운드에서 실행될 때도 Distribution 인증서에 접근할 수 있도록 설정
+Jenkins가 백그라운드에서 실행될 때도 Distribution 인증서를 사용할 수 있도록 Trust 설정 및 Access Control 설정
+
+---
+
+## ⚠️ 현재 에러
+```
+error: Invalid trust settings. Restore system default trust settings for certificate "Apple Distribution: JIEUN LEE (7CJ6R87Q3T)" in order to sign code with it.
+```
+
+이 에러는 인증서의 **Trust 설정**이 잘못되어 있을 때 발생합니다.
 
 ---
 
@@ -17,19 +26,27 @@ open /Applications/Utilities/Keychain\ Access.app
 
 1. **왼쪽 사이드바**에서 `login` Keychain 선택
 2. **카테고리**에서 `My Certificates` 선택
-3. **"Apple Distribution: JIEUN LEE"** 인증서 찾기
+3. **"Apple Distribution: JIEUN LEE (7CJ6R87Q3T)"** 인증서 찾기
 
-### 3단계: 인증서 접근 권한 설정
+### 3단계: 인증서 Trust 설정 수정
 
 1. **"Apple Distribution" 인증서 더블클릭**
+2. **"Trust" 탭** 클릭
+3. **"When using this certificate"** 드롭다운에서 **"Always Trust"** 선택
+4. 창을 닫으면 비밀번호를 물어봅니다 → **맥 비밀번호 입력**
+5. **"Save Changes"** 클릭
+
+### 4단계: 인증서 Access Control 설정
+
+1. **"Apple Distribution" 인증서 더블클릭** (또는 이미 열려있다면)
 2. **"Access Control" 탭** 클릭
 3. **"Allow all applications to access this item"** 체크
    - 또는 **"Confirm before allowing access"** 체크 해제
 4. **"Save Changes"** 클릭
 
-### 4단계: 개인키 접근 권한 설정
+### 5단계: 개인키 Access Control 설정
 
-1. **인증서를 펼쳐서 개인키 확인**
+1. **인증서를 펼쳐서 개인키 확인** (인증서 왼쪽 화살표 클릭)
 2. **개인키 더블클릭**
 3. **"Access Control" 탭** 클릭
 4. **"Allow all applications to access this item"** 체크

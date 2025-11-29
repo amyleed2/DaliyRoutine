@@ -99,10 +99,20 @@ pipeline {
                     if security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PWD" "$KEYCHAIN_PATH" 2>&1; then
                         echo "✅ 인증서 접근 권한 설정 성공"
                     else
-                        echo "⚠️  인증서 접근 권한 설정 실패 (일부 인증서는 추가 비밀번호가 필요할 수 있음)"
-                        echo "⚠️  하지만 Keychain이 언락되어 있으므로 대부분의 경우 작동합니다"
-                        echo "⚠️  만약 무한 Processing이 발생하면 수동으로 인증서 접근 권한을 설정해야 합니다"
+                        echo "⚠️  인증서 접근 권한 설정 실패"
+                        echo "⚠️  이는 정상일 수 있습니다. Keychain이 언락되어 있으므로 대부분의 경우 작동합니다"
                     fi
+                    
+                    # Trust 설정 확인 및 안내
+                    echo ""
+                    echo "📋 중요: 'Invalid trust settings' 에러가 발생하면:"
+                    echo "   1. Keychain Access 앱 열기"
+                    echo "   2. 'Apple Distribution: JIEUN LEE' 인증서 찾기"
+                    echo "   3. 인증서 더블클릭 → 'Trust' 탭 → 'Always Trust' 선택"
+                    echo "   4. 'Access Control' 탭 → 'Allow all applications' 체크"
+                    echo "   5. 개인키도 동일하게 설정"
+                    echo "   자세한 내용은 KEYCHAIN_SETUP.md 참고"
+                    echo ""
                     
                     echo "✅ Keychain 언락 완료"
                     '''
